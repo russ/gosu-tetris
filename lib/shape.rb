@@ -49,7 +49,7 @@ class Shape
   end
   
   def block_size
-    50
+    25
   end
   
   def render

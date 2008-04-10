@@ -4,14 +4,18 @@ require 'gosu'
 $: << Pathname.new(File.dirname(__FILE__)).realpath
 
 require 'shape'
-require 'step'
+require 'shapes/step'
+require 'shapes/t'
+require 'shapes/l'
+require 'shapes/square'
+require 'shapes/straight'
 
 class GameWindow < Gosu::Window
   
   def initialize
     super(640, 480, false)
     self.caption = 'Tetris'
-    @shape = Step.new(self)
+    @shape = Straight.new(self)
   end
   
   def update
@@ -25,6 +29,10 @@ class GameWindow < Gosu::Window
     
     if button_down? Gosu::Button::KbDown
       @shape.face_south
+    end
+
+    if button_down? Gosu::Button::KbLeft
+      @shape.face_west
     end
   end
   
