@@ -5,7 +5,7 @@ class Shape
   def initialize(window)
     @window = window
     @facing = 0
-    @block_image = Gosu::Image.new(@window, 'media/block.png', 1)
+    @block_image = Gosu::Image.new(@window, File.dirname(__FILE__) + '/media/block.png', 1)
   end
   
   def rotate_clockwise

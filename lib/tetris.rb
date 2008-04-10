@@ -1,4 +1,8 @@
+require 'pathname'
 require 'gosu'
+
+$: << Pathname.new(File.dirname(__FILE__)).realpath
+
 require 'shape'
 require 'step'
 
