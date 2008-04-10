@@ -1,10 +1,14 @@
 class Shape
   
   attr_reader :facing
+  attr_reader :current_x
+  attr_reader :current_y
   
   def initialize(window)
     @window = window
     @facing = 0
+    @current_x = 4
+    @current_y = 0
     @block_image = Gosu::Image.new(@window, File.dirname(__FILE__) + '/media/block.png', 1)
   end
   
@@ -53,10 +57,11 @@ class Shape
   end
   
   def render
+		@current_y += Gosu::offset_y(@current_y, -0.025)
     self.send("structure_#{ directions[@facing].to_s }").each_with_index do |row, pos_y|
       row.each_with_index do |col, pos_x|
         if col == 1
-          @block_image.draw(pos_x * block_size, pos_y * block_size, 0)
+          @block_image.draw((pos_x * block_size) + (@current_x * block_size) + block_size, (pos_y * block_size) + (@current_y * block_size), 0)
         end
       end
     end

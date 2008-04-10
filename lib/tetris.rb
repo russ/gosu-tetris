@@ -29,7 +29,7 @@ class GameWindow < Gosu::Window
     super(640, 480, $options[:fullscreen])
     self.caption = 'Tetris'
     @grid = Grid.new(self)
-    @shape = Straight.new(self)
+    @shape = T.new(self)
   end
   
   def update
@@ -51,8 +51,8 @@ class GameWindow < Gosu::Window
   end
   
   def draw
-    # @shape.render
 		@grid.render
+    @shape.render
   end
   
   def button_down(id)
