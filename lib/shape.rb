@@ -12,6 +12,11 @@ class Shape
     @current_x = 4
     @current_y = -3
     @block_image = Gosu::Image.new(@window, File.dirname(__FILE__) + '/media/block.png', 1)
+
+		@color = Gosu::Color.new(0xff000000)
+    @color.red = rand(255 - 40) + 40
+    @color.green = rand(255 - 40) + 40
+    @color.blue = rand(255 - 40) + 40
   end
 
 	def self.random(window)
@@ -89,7 +94,7 @@ class Shape
     self.send("structure_#{ directions[@facing].to_s }").each_with_index do |row, pos_y|
       row.each_with_index do |col, pos_x|
         if col == 1
-          @block_image.draw((pos_x * block_size) + (@current_x * block_size) + block_size, (pos_y * block_size) + (@current_y * block_size), 0)
+          @block_image.draw((pos_x * block_size) + (@current_x * block_size) + block_size, (pos_y * block_size) + (@current_y * block_size), 0, 1, 1, @color)
         end
       end
     end
