@@ -17,7 +17,6 @@ require 'shapes/straight'
 $options = { :fullscreen => false }
 OptionParser.new do |opts|
   opts.banner = "Usage: gosu-tetris [options]"
-
   opts.on("-f", nil, "Run in fullscreen") do |f|
     $options[:fullscreen] = f
   end
@@ -29,34 +28,48 @@ class GameWindow < Gosu::Window
     super(640, 480, $options[:fullscreen])
     self.caption = 'Tetris'
     @grid = Grid.new(self)
-    @shape = T.new(self)
+		@shapes = []
+		@active_shape = T.new(self)
   end
   
   def update
-    if button_down? Gosu::Button::KbUp
-      @shape.face_north
-    end
-    
-    if button_down? Gosu::Button::KbRight
-      @shape.face_east
-    end
-    
-    if button_down? Gosu::Button::KbDown
-      @shape.face_south
+    if button_down? Gosu::Button::KbLeft
+      @active_shape.move_left
     end
 
-    if button_down? Gosu::Button::KbLeft
-      @shape.face_west
+    if button_down? Gosu::Button::KbRight
+      @active_shape.move_right
     end
+
+    if button_down? 97 # A
+      @active_shape.rotate_clockwise
+    end
+
+    if button_down? 115 # S
+      @active_shape.rotate_counter_clockwise
+    end
+    
+    # if button_down? Gosu::Button::KbDown
+    #   @shape.face_south
+    # end
   end
   
   def draw
 		@grid.render
-    @shape.render
+
+		@active_shape = T.new(self) if @active_shape.nil?
+		if @active_shape.stopped?
+    	@shapes << @active_shape
+			@active_shape = T.new(self)
+    	@active_shape.render
+		end
+
+		@active_shape.render
+		@shapes.each { |s| s.render }
   end
   
   def button_down(id)
-    close if Gosu::Button::KbReturn == id
+    close if Gosu::Button::KbEscape == id
   end
   
 end

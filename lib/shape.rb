@@ -1,24 +1,42 @@
 class Shape
   
   attr_reader :facing
+  attr_reader :state
   attr_reader :current_x
   attr_reader :current_y
   
   def initialize(window)
     @window = window
     @facing = 0
+		@state = :active
     @current_x = 4
-    @current_y = 0
+    @current_y = -3
     @block_image = Gosu::Image.new(@window, File.dirname(__FILE__) + '/media/block.png', 1)
   end
+
+	def move_left
+		@current_x -= 1 unless @current_x == 0 || @state == :stopped
+	end
+
+	def move_right
+		@current_x += 1 unless @current_x == 8 || @state == :stopped
+	end
   
   def rotate_clockwise
-    facing_west? ? face_north : @facing += 1
+		unless @state == :stopped
+    	facing_west? ? face_north : @facing += 1
+		end
   end
   
   def rotate_counter_clockwise
-    facing_north? ? face_west : @facing -= 1
+		unless @state == :stopped
+    	facing_north? ? face_west : @facing -= 1
+		end
   end
+
+	def stopped?
+		@state == :stopped
+	end
   
   def directions
     [ :north, :east, :south, :west ]
@@ -57,7 +75,12 @@ class Shape
   end
   
   def render
-		@current_y += Gosu::offset_y(@current_y, -0.025)
+		unless @current_y >= 15
+			@current_y += 1 
+		else
+			@state = :stopped
+		end
+
     self.send("structure_#{ directions[@facing].to_s }").each_with_index do |row, pos_y|
       row.each_with_index do |col, pos_x|
         if col == 1
