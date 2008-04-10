@@ -29,7 +29,6 @@ class GameWindow < Gosu::Window
     self.caption = 'Tetris'
     @grid = Grid.new(self)
 		@shapes = []
-		@active_shape = T.new(self)
   end
   
   def update
@@ -57,10 +56,10 @@ class GameWindow < Gosu::Window
   def draw
 		@grid.render
 
-		@active_shape = T.new(self) if @active_shape.nil?
+		@active_shape = Shape.random(self) if @active_shape.nil?
 		if @active_shape.stopped?
     	@shapes << @active_shape
-			@active_shape = T.new(self)
+			@active_shape = Shape.random(self)
     	@active_shape.render
 		end
 

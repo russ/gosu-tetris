@@ -14,6 +14,11 @@ class Shape
     @block_image = Gosu::Image.new(@window, File.dirname(__FILE__) + '/media/block.png', 1)
   end
 
+	def self.random(window)
+		shapes = [ T, L, Straight, Square, Step ]
+		shapes[rand(shapes.length)].new(window)
+	end
+
 	def move_left
 		@current_x -= 1 unless @current_x == 0 || @state == :stopped
 	end
