@@ -12,16 +12,18 @@ class Shape
     @current_x = 4
     @current_y = -3
     @block_image = Gosu::Image.new(@window, File.dirname(__FILE__) + '/media/block.png', 1)
-
-		@color = Gosu::Color.new(0xff000000)
-    @color.red = rand(255 - 40) + 40
-    @color.green = rand(255 - 40) + 40
-    @color.blue = rand(255 - 40) + 40
   end
 
 	def self.random(window)
 		shapes = [ T, L, Straight, Square, Step ]
 		shapes[rand(shapes.length)].new(window)
+	end
+
+	def set_color
+		@color = Gosu::Color.new(0xff000000)
+    @color.red = rand(255 - 40) + 40
+    @color.green = rand(255 - 40) + 40
+    @color.blue = rand(255 - 40) + 40
 	end
 
 	def move_left
