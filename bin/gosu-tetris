@@ -3,3 +3,6 @@
 $: << File.dirname(__FILE__) + '/../lib'
 
 require 'tetris'
+
+window = GameWindow.new
+window.show

@@ -29,6 +29,7 @@ class GameWindow < Gosu::Window
     @grid = Grid.new(self)
 		@shapes = []
 		@speed = $options[:speed]
+		@speed ||= 1
 		@count = 0
   end
   
@@ -82,6 +83,3 @@ class GameWindow < Gosu::Window
   end
   
 end
-
-window = GameWindow.new
-window.show
