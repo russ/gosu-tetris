@@ -8,6 +8,8 @@ class Shape
 	attr_reader :bottom_x
 	attr_reader :bottom_y
 
+	attr_accessor :grid
+
   def initialize(window, grid)
     @window = window
     @grid = grid
@@ -29,10 +31,10 @@ class Shape
     @color.blue = rand(255 - 40) + 40
 	end
 
-	def set_start_position
-    @facing = 0
-    @top_x = 5
-    @top_y = 0
+	def set_start_position(facing = 1, top_x = 5, top_y = 0)
+    @facing = facing
+    @top_x = top_x
+    @top_y = top_y
 		set_coordinates
 	end
 
@@ -116,7 +118,7 @@ class Shape
   def render
     self.send("structure_#{ directions[@facing].to_s }").each_with_index do |row, pos_y|
       row.each_with_index do |col, pos_x|
-        @block_image.draw((pos_x * block_size) + (@top_x * block_size) + block_size, (pos_y * block_size) + (@top_y * block_size), 0, 1, 1, @color) if col == 1
+        @block_image.draw((pos_x * block_size) + (@top_x * block_size) + block_size + @grid.left, (pos_y * block_size) + (@top_y * block_size), 0, 1, 1, @color) if col == 1
       end
     end
   end

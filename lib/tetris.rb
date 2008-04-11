@@ -6,6 +6,7 @@ require 'gosu'
 $: << Pathname.new(File.dirname(__FILE__)).realpath
 
 require 'grid'
+require 'next_shape'
 require 'shape'
 require 'shapes/step'
 require 'shapes/t'
@@ -27,6 +28,8 @@ class GameWindow < Gosu::Window
     super(640, 480, $options[:fullscreen])
     self.caption = 'Tetris'
     @grid = Grid.new(self)
+		@next_shape = NextShape.new(self)
+		@next_shape.shape = Shape.random(self, @next_shape)
 		@shapes = []
 		@speed = $options[:speed]
 		@speed ||= 1
@@ -71,9 +74,14 @@ class GameWindow < Gosu::Window
 		@active_shape = Shape.random(self, @grid) if @active_shape.nil?
 		if @active_shape.stopped?
     	@shapes << @active_shape
-			@active_shape = Shape.random(self, @grid)
+			@active_shape = @next_shape.shape
+			@active_shape.set_start_position
+			@active_shape.grid = @grid
+			@next_shape = NextShape.new(self)
+			@next_shape.shape = Shape.random(self, @next_shape)
 		end
 
+		@next_shape.render
 		@active_shape.render
 		@shapes.each { |s| s.render }
   end
