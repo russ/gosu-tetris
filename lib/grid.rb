@@ -37,8 +37,8 @@ class Grid
 		@x_offset + @block_size
 	end
 
-	def intersects?(shape)
-		shape.top_x < 0 || shape.bottom_y > (grid[0].size - 2) || shape.bottom_x > (grid.size - 1)
+	def intersect?(top_x, top_y, bottom_x, bottom_y)
+		top_x < 1 || bottom_x > (grid[0].size - 1) || bottom_y > grid.size
 	end
 
 	private

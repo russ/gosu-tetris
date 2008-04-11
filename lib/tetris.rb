@@ -68,10 +68,10 @@ class GameWindow < Gosu::Window
   def draw
 		@grid.render
 
-		@active_shape = Shape.random(self) if @active_shape.nil?
+		@active_shape = Shape.random(self, @grid) if @active_shape.nil?
 		if @active_shape.stopped?
     	@shapes << @active_shape
-			@active_shape = Shape.random(self)
+			@active_shape = Shape.random(self, @grid)
 		end
 
 		@active_shape.render

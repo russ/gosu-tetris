@@ -1,9 +1,5 @@
 class L < Shape
   
-  def initialize(window)
-    super
-  end
-  
   def structure_north
     [
       [ 0, 1 ],

@@ -1,9 +1,5 @@
 class Straight < Shape
   
-  def initialize(window)
-    super
-  end
-  
   def structure_north
     [
       [ 1 ],

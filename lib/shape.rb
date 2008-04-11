@@ -2,21 +2,24 @@ class Shape
   
   attr_reader :facing
   attr_reader :state
-  attr_reader :current_x
-  attr_reader :current_y
-  
-  def initialize(window)
+
+	attr_reader :top_x
+	attr_reader :top_y
+	attr_reader :bottom_x
+	attr_reader :bottom_y
+
+  def initialize(window, grid)
     @window = window
-    @facing = 0
+    @grid = grid
 		@state = :active
-    @current_x = 4
-    @current_y = -3
     @block_image = Gosu::Image.new(@window, File.dirname(__FILE__) + '/media/block.png', 1)
+		set_color
+		set_start_position
   end
 
-	def self.random(window)
+	def self.random(window, grid)
 		shapes = [ T, L, Straight, Square, Step ]
-		shapes[rand(shapes.length)].new(window)
+		shapes[rand(shapes.length)].new(window, grid)
 	end
 
 	def set_color
@@ -26,17 +29,31 @@ class Shape
     @color.blue = rand(255 - 40) + 40
 	end
 
+	def set_start_position
+    @facing = 0
+    @top_x = 5
+    @top_y = 0
+		set_coordinates
+	end
+
 	def move_left
-		@current_x -= 1 unless @current_x == 0 || @state == :stopped
+		unless @state == :stopped || @grid.intersect?(@top_x - 1, @top_y, @bottom_x - 1, @bottom_y)
+			@top_x -= 1 
+			@bottom_x -= 1 
+		end
 	end
 
 	def move_right
-		@current_x += 1 unless @current_x == 8 || @state == :stopped
+		unless @state == :stopped || @grid.intersect?(@top_x + 1, @top_y, @bottom_x + 1, @bottom_y)
+			@top_x += 1 
+			@bottom_x += 1 
+		end
 	end
 
 	def move_down
-		unless @current_y >= 15
-			@current_y += 1 
+		unless @grid.intersect?(@top_x, @top_y + 1, @bottom_x, @bottom_y + 1)
+			@top_y += 1 
+			@bottom_y += 1 
 		else
 			@state = :stopped
 		end
@@ -45,12 +62,14 @@ class Shape
   def rotate_clockwise
 		unless @state == :stopped
     	facing_west? ? face_north : @facing += 1
+			set_coordinates
 		end
   end
   
   def rotate_counter_clockwise
 		unless @state == :stopped
     	facing_north? ? face_west : @facing -= 1
+			set_coordinates
 		end
   end
 
@@ -97,11 +116,19 @@ class Shape
   def render
     self.send("structure_#{ directions[@facing].to_s }").each_with_index do |row, pos_y|
       row.each_with_index do |col, pos_x|
-        if col == 1
-          @block_image.draw((pos_x * block_size) + (@current_x * block_size) + block_size, (pos_y * block_size) + (@current_y * block_size), 0, 1, 1, @color)
-        end
+        @block_image.draw((pos_x * block_size) + (@top_x * block_size) + block_size, (pos_y * block_size) + (@top_y * block_size), 0, 1, 1, @color) if col == 1
       end
     end
   end
+
+	private
+
+	def set_coordinates
+		structure = self.send("structure_#{ directions[@facing].to_s }")
+		width = structure[0].size
+		height = structure.size
+		@bottom_x = @top_x + width
+		@bottom_y = @top_y + height
+	end
   
 end
