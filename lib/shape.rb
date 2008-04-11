@@ -31,6 +31,14 @@ class Shape
 	def move_right
 		@current_x += 1 unless @current_x == 8 || @state == :stopped
 	end
+
+	def move_down
+		unless @current_y >= 15
+			@current_y += 1 
+		else
+			@state = :stopped
+		end
+	end
   
   def rotate_clockwise
 		unless @state == :stopped
@@ -85,12 +93,6 @@ class Shape
   end
   
   def render
-		unless @current_y >= 15
-			@current_y += 1 
-		else
-			@state = :stopped
-		end
-
     self.send("structure_#{ directions[@facing].to_s }").each_with_index do |row, pos_y|
       row.each_with_index do |col, pos_x|
         if col == 1

@@ -17,9 +17,8 @@ require 'shapes/straight'
 $options = { :fullscreen => false }
 OptionParser.new do |opts|
   opts.banner = "Usage: gosu-tetris [options]"
-  opts.on("-f", nil, "Run in fullscreen") do |f|
-    $options[:fullscreen] = f
-  end
+  opts.on("-f", nil, "Run in fullscreen") { |v| $options[:fullscreen] = v }
+  opts.on("-s N", Integer, "Game Speed (1-6)") { |v| $options[:speed] = v }
 end.parse!
 
 class GameWindow < Gosu::Window
@@ -29,6 +28,8 @@ class GameWindow < Gosu::Window
     self.caption = 'Tetris'
     @grid = Grid.new(self)
 		@shapes = []
+		@speed = $options[:speed]
+		@count = 0
   end
   
   def update
@@ -40,6 +41,10 @@ class GameWindow < Gosu::Window
       @active_shape.move_right
     end
 
+    if button_down? Gosu::Button::KbDown
+      @active_shape.move_down
+    end
+
     if button_down? 97 # A
       @active_shape.rotate_clockwise
     end
@@ -48,9 +53,8 @@ class GameWindow < Gosu::Window
       @active_shape.rotate_counter_clockwise
     end
     
-    # if button_down? Gosu::Button::KbDown
-    #   @shape.face_south
-    # end
+		@active_shape.move_down if @count % (60 - ((@speed - 1) * 10)) == 0
+		@count += 1
   end
   
   def draw
@@ -60,7 +64,6 @@ class GameWindow < Gosu::Window
 		if @active_shape.stopped?
     	@shapes << @active_shape
 			@active_shape = Shape.random(self)
-    	@active_shape.render
 		end
 
 		@active_shape.render
