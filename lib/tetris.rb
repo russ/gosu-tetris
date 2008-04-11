@@ -33,26 +33,33 @@ class GameWindow < Gosu::Window
   end
   
   def update
-    if button_down? Gosu::Button::KbLeft
-      @active_shape.move_left
-    end
+		# Control the speed up the update
+		if @count % 5 == 0
+    	if button_down? Gosu::Button::KbLeft
+    	  @active_shape.move_left
+    	end
 
-    if button_down? Gosu::Button::KbRight
-      @active_shape.move_right
-    end
+    	if button_down? Gosu::Button::KbRight
+    	  @active_shape.move_right
+    	end
 
-    if button_down? Gosu::Button::KbDown
-      @active_shape.move_down
-    end
+    	if button_down? Gosu::Button::KbDown
+    	  @active_shape.move_down
+    	end
 
-    if button_down? 97 # A
-      @active_shape.rotate_clockwise
-    end
+    	if button_down? Gosu::Button::KbUp
+    	  @active_shape.rotate_clockwise
+    	end
 
-    if button_down? 115 # S
-      @active_shape.rotate_counter_clockwise
-    end
-    
+    	if button_down? 97 # A
+    	  @active_shape.rotate_clockwise
+    	end
+
+    	if button_down? 115 # S
+    	  @active_shape.rotate_counter_clockwise
+    	end
+		end
+
 		@active_shape.move_down if @count % (60 - ((@speed - 1) * 10)) == 0
 		@count += 1
   end
