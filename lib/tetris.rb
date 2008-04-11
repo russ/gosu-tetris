@@ -34,6 +34,7 @@ class GameWindow < Gosu::Window
 		@speed = $options[:speed]
 		@speed ||= 1
 		@count = 0
+    @logo_image = Gosu::Image.new(self, File.dirname(__FILE__) + '/media/logo.png', true)
   end
   
   def update
@@ -84,6 +85,7 @@ class GameWindow < Gosu::Window
 		@next_shape.render
 		@active_shape.render
 		@shapes.each { |s| s.render }
+    @logo_image.draw(365, 225, 0)
   end
   
   def button_down(id)
