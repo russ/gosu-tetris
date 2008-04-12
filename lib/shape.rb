@@ -118,7 +118,7 @@ class Shape
   def render
     self.send("structure_#{ directions[@facing].to_s }").each_with_index do |row, pos_y|
       row.each_with_index do |col, pos_x|
-        @block_image.draw((pos_x * block_size) + (@top_x * block_size) + block_size + @grid.left, (pos_y * block_size) + (@top_y * block_size), 0, 1, 1, @color) if col == 1
+        @block_image.draw((pos_x * block_size) + (@top_x * block_size) + @grid.left, (pos_y * block_size) + (@top_y * block_size), 0, 1, 1, @color) if col == 1
       end
     end
   end

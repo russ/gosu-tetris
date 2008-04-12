@@ -38,7 +38,8 @@ class Grid
 	end
 
 	def intersect?(top_x, top_y, bottom_x, bottom_y)
-		top_x < -1 || bottom_x > (grid[0].size - 3) || bottom_y > grid.size
+		# puts "#{top_x} #{top_y} #{bottom_x} #{bottom_y}"
+		top_x < 0 || bottom_x > (grid[0].size - 2) || bottom_y > grid.size
 	end
 
 	private
