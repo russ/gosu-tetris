@@ -39,24 +39,29 @@ class Shape
 	end
 
 	def move_left
-		unless @state == :stopped || @grid.intersect?(@top_x - 1, @top_y, @bottom_x - 1, @bottom_y)
-			@top_x -= 1 
-			@bottom_x -= 1 
-		end
-	end
-
-	def move_right
-		unless @state == :stopped || @grid.intersect?(@top_x + 1, @top_y, @bottom_x + 1, @bottom_y)
+		@top_x -= 1 
+		@bottom_x -= 1 
+		if @state == :stopped || @grid.intersect?(self)
 			@top_x += 1 
 			@bottom_x += 1 
 		end
 	end
 
+	def move_right
+		@top_x += 1 
+		@bottom_x += 1 
+		if @state == :stopped || @grid.intersect?(self)
+			@top_x -= 1 
+			@bottom_x -= 1 
+		end
+	end
+
 	def move_down
-		unless @grid.intersect?(@top_x, @top_y + 1, @bottom_x, @bottom_y + 1)
-			@top_y += 1 
-			@bottom_y += 1 
-		else
+		@top_y += 1 
+		@bottom_y += 1 
+		if @grid.intersect?(self)
+			@top_y -= 1 
+			@bottom_y -= 1 
 			@state = :stopped
 		end
 	end
@@ -77,6 +82,18 @@ class Shape
 
 	def stopped?
 		@state == :stopped
+	end
+
+	def in_space
+		structure = self.send("structure_#{ directions[@facing].to_s }")
+		width = structure[0].size
+		height = structure.size
+		[ [ @top_x, @top_y ], [ @top_x + (width - 1), @top_y  ], [ @bottom_x - 1, @top_y + (height - 1) ], [ @bottom_x - 1, @bottom_y - 1 ] ]
+	end
+
+	def intersect?(shape)
+		self.in_space.each { |coor| return true if shape.in_space.include?(coor) }
+		false
 	end
   
   def directions

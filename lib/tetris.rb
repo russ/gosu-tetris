@@ -27,13 +27,14 @@ class GameWindow < Gosu::Window
   def initialize
     super(640, 480, $options[:fullscreen])
     self.caption = 'Tetris'
-    @grid = Grid.new(self)
 		@next_shape = NextShape.new(self)
 		@next_shape.shape = Shape.random(self, @next_shape)
 		@shapes = []
 		@speed = $options[:speed]
 		@speed ||= 1
 		@count = 0
+    @grid = Grid.new(self)
+		@grid.shapes = @shapes
     @logo_image = Gosu::Image.new(self, File.dirname(__FILE__) + '/media/logo.png', true)
   end
   

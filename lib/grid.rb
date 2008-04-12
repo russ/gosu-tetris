@@ -3,6 +3,7 @@ class Grid
 	attr_accessor :block_size
 	attr_accessor :x_offset
 	attr_accessor :y_offset
+	attr_accessor :shapes
 
 	def initialize(window, options = {})
 		@window = window
@@ -37,9 +38,13 @@ class Grid
 		@x_offset + @block_size
 	end
 
-	def intersect?(top_x, top_y, bottom_x, bottom_y)
-		# puts "#{top_x} #{top_y} #{bottom_x} #{bottom_y}"
-		top_x < 0 || bottom_x > (grid[0].size - 2) || bottom_y > grid.size
+	def intersect?(shape)
+		# Check for intersection on existing shapes
+		@shapes.each { |s| return true if shape.intersect?(s) }
+
+		# Check for intersection of the sides of the grid
+		coors = shape.in_space
+		coors[0][0] < 0 || coors[3][0] > (grid[0].size - 3) || coors[3][1] > (grid.size - 1)
 	end
 
 	private
