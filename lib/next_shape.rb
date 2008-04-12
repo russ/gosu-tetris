@@ -21,7 +21,7 @@ class NextShape < Grid
       end
     end
 		@shape.grid = self
-		@shape.set_start_position(1, 2, 3)
+		@shape.set_start_position(1, 3, 3)
 		@shape.render
 	end
 
