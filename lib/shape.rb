@@ -1,153 +1,81 @@
 class Shape
   
-  attr_reader :facing
-  attr_reader :state
-
-	attr_reader :top_x
-	attr_reader :top_y
-	attr_reader :bottom_x
-	attr_reader :bottom_y
-
-	attr_accessor :grid
+  attr_reader :facing, :state, :blocks
+	attr_accessor :position
 
   def initialize(window, grid)
     @window = window
     @grid = grid
+		@facing = 0
 		@state = :active
+		@position = Coordinate.new(0, 0)
     @block_image = Gosu::Image.new(@window, File.dirname(__FILE__) + '/media/block.png', 1)
-		set_color
-		set_start_position
   end
 
 	def self.random(window, grid)
-		shapes = [ T, L, Straight, Square, Step ]
+		shapes = [ T, LLeft, LRight, Straight, Square, StepLeft, StepRight ]
 		shapes[rand(shapes.length)].new(window, grid)
 	end
 
-	def set_color
-		@color = Gosu::Color.new(0xff000000)
-    @color.red = rand(255 - 40) + 40
-    @color.green = rand(255 - 40) + 40
-    @color.blue = rand(255 - 40) + 40
-	end
-
-	def set_start_position(facing = 1, top_x = 5, top_y = 0)
-    @facing = facing
-    @top_x = top_x
-    @top_y = top_y
-		set_coordinates
-	end
-
-	def move_left
-		@top_x -= 1 
-		@bottom_x -= 1 
-		if @state == :stopped || @grid.intersect?(self)
-			@top_x += 1 
-			@bottom_x += 1 
-		end
-	end
-
-	def move_right
-		@top_x += 1 
-		@bottom_x += 1 
-		if @state == :stopped || @grid.intersect?(self)
-			@top_x -= 1 
-			@bottom_x -= 1 
-		end
-	end
-
-	def move_down
-		@top_y += 1 
-		@bottom_y += 1 
-		if @grid.intersect?(self)
-			@top_y -= 1 
-			@bottom_y -= 1 
-			@state = :stopped
-		end
-	end
-  
-  def rotate_clockwise
-		unless @state == :stopped
-    	facing_west? ? face_north : @facing += 1
-			set_coordinates
-		end
-  end
-  
-  def rotate_counter_clockwise
-		unless @state == :stopped
-    	facing_north? ? face_west : @facing -= 1
-			set_coordinates
-		end
-  end
-
-	def stopped?
-		@state == :stopped
-	end
-
-	def in_space
-		structure = self.send("structure_#{ directions[@facing].to_s }")
-		width = structure[0].size
-		height = structure.size
-		[ [ @top_x, @top_y ], [ @top_x + (width - 1), @top_y  ], [ @bottom_x - 1, @top_y + (height - 1) ], [ @bottom_x - 1, @bottom_y - 1 ] ]
-	end
-
-	def intersect?(shape)
-		self.in_space.each { |coor| return true if shape.in_space.include?(coor) }
-		false
-	end
-  
   def directions
     [ :north, :east, :south, :west ]
   end
+
+	# Collision detection
+	def can_move_to?(coor)
+		return false if stopped?
+		@blocks.each { |block| block.position! }
+		@blocks.each do |block|
+			return false if block.can_move_to?(coor) == false
+		end
+	end
+
+	def move_left
+		@position = Coordinate.new(@position.x - 1, @position.y) if can_move_to?(Coordinate.new(-1, 0))
+	end
+
+	def move_right
+		@position = Coordinate.new(@position.x + 1, @position.y) if can_move_to?(Coordinate.new(1, 0))
+	end
   
-  def limit
-    directions.size - 1
-  end
-  
-  def facing_west?
-    @facing == limit
-  end
-  
-  def facing_north?
-    @facing == 0
-  end
-  
-  def face_north
-    @facing = 0
-  end
-  
-  def face_west
-    @facing = limit
-  end
-  
-  def face_east
-    @facing = 1
-  end
-  
-  def face_south
-    @facing = 2
-  end
-  
-  def block_size
-    25
-  end
-  
+	def move_down
+		if can_move_to?(Coordinate.new(0, 1))
+			@position = Coordinate.new(@position.x, @position.y + 1)
+		else
+			@status = :stopped
+		end
+	end
+
+	def rotate(direction)
+		@blocks.each { |block| block.position! }
+		if direction == :clockwise
+			@facing = (@facing == 3) ? 0 : @facing + 1
+		else
+			@facing = (@facing == 0) ? 3 : @facing - 1
+		end
+	end
+
+	def active?
+		@status == :active
+	end
+
+	def stopped?
+		@status == :stopped
+	end
+
   def render
+		@blocks = []
     self.send("structure_#{ directions[@facing].to_s }").each_with_index do |row, pos_y|
       row.each_with_index do |col, pos_x|
-        @block_image.draw((pos_x * block_size) + (@top_x * block_size) + @grid.left, (pos_y * block_size) + (@top_y * block_size), 0, 1, 1, @color) if col == 1
+				if col == 1
+					block = Block.new(@window, @grid)
+					block.position = Coordinate.new(pos_x + @position.x, pos_y + @position.y)
+					block.color = @color
+					block.render
+					@blocks << block
+				end
       end
     end
   end
-
-	private
-
-	def set_coordinates
-		structure = self.send("structure_#{ directions[@facing].to_s }")
-		width = structure[0].size
-		height = structure.size
-		@bottom_x = @top_x + width
-		@bottom_y = @top_y + height
-	end
   
 end

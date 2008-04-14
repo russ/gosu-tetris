@@ -6,11 +6,14 @@ require 'gosu'
 $: << Pathname.new(File.dirname(__FILE__)).realpath
 
 require 'grid'
-require 'next_shape'
+require 'coordinate'
+require 'block'
 require 'shape'
-require 'shapes/step'
+require 'shapes/step_left'
+require 'shapes/step_right'
 require 'shapes/t'
-require 'shapes/l'
+require 'shapes/l_left'
+require 'shapes/l_right'
 require 'shapes/square'
 require 'shapes/straight'
 
@@ -27,70 +30,43 @@ class GameWindow < Gosu::Window
   def initialize
     super(640, 480, $options[:fullscreen])
     self.caption = 'Tetris'
-		@next_shape = NextShape.new(self)
-		@next_shape.shape = Shape.random(self, @next_shape)
+
 		@shapes = []
-		@speed = $options[:speed]
-		@speed ||= 1
-		@count = 0
-    @grid = Grid.new(self)
-		@grid.shapes = @shapes
-    @logo_image = Gosu::Image.new(self, File.dirname(__FILE__) + '/media/logo.png', true)
+		@grid = Grid.new(self)
+		@cur_sec = 0
   end
   
   def update
-		# Control the speed up the update
-		if @count % 5 == 0
-    	if button_down? Gosu::Button::KbLeft
-    	  @active_shape.move_left
-    	end
+		now = Gosu::milliseconds
 
-    	if button_down? Gosu::Button::KbRight
-    	  @active_shape.move_right
-    	end
+		current_shape.move_left						if button_down? Gosu::Button::KbLeft
+ 		current_shape.move_right					if button_down? Gosu::Button::KbRight
+ 		current_shape.move_down						if button_down? Gosu::Button::KbDown
+		current_shape.rotate(:clockwise)	if button_down? Gosu::Button::KbUp
 
-    	if button_down? Gosu::Button::KbDown
-    	  @active_shape.move_down
-    	end
-
-    	if button_down? Gosu::Button::KbUp
-    	  @active_shape.rotate_clockwise
-    	end
-
-    	if button_down? 97 # A
-    	  @active_shape.rotate_clockwise
-    	end
-
-    	if button_down? 115 # S
-    	  @active_shape.rotate_counter_clockwise
-    	end
+		if @cur_sec / 1000 != now / 1000
+			current_shape.move_down
+			@cur_sec = now
 		end
-
-		@active_shape.move_down if @count % (60 - ((@speed - 1) * 10)) == 0
-		@count += 1
-  end
+	end
   
   def draw
 		@grid.render
-
-		@active_shape = Shape.random(self, @grid) if @active_shape.nil?
-		if @active_shape.stopped?
-    	@shapes << @active_shape
-			@active_shape = @next_shape.shape
-			@active_shape.set_start_position
-			@active_shape.grid = @grid
-			@next_shape = NextShape.new(self)
-			@next_shape.shape = Shape.random(self, @next_shape)
+		if current_shape.nil? || current_shape.stopped? 
+			exit! if @grid.overflowed?
+			@shapes << Shape.random(self, @grid)
 		end
-
-		@next_shape.render
-		@active_shape.render
 		@shapes.each { |s| s.render }
-    @logo_image.draw(365, 225, 0)
   end
   
   def button_down(id)
     close if Gosu::Button::KbEscape == id
   end
+
+	private
+
+	def current_shape
+		@shapes.last
+	end
   
 end
