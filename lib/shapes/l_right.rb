@@ -18,8 +18,8 @@ class LRight < Shape
 
   def structure_east
     [
-      [ 0, 0, 1 ],
       [ 1, 1, 1 ],
+      [ 1, 0, 0 ],
     ]
   end
 
