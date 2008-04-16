@@ -60,7 +60,6 @@ class Grid
 
 	def remove_filled_rows
 		@grid.each_with_index do |row, y|
-			puts is_filled_row(row)
 			if is_filled_row(row)
 				@grid[y].each_with_index do |i,x| 
 					block!(remove_block_at(Coordinate.new(x, y)))

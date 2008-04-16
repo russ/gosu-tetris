@@ -30,23 +30,32 @@ class GameWindow < Gosu::Window
   def initialize
     super(640, 480, $options[:fullscreen])
     self.caption = 'Tetris'
-
 		@grid = Grid.new(self)
-		@cur_sec = 0
+		@last_time = 0
   end
-  
+ 
+  # Since this function gets called 60 times per seconds
+	# it just get better input by incrementing a value.
+	# The milliseconds function was to spotty to get a good
+	# constant value to comapare against. You could possibly
+	# factor it down, but then your spending more processing
+	# time on that alone.	
   def update
-		now = Gosu::milliseconds
-
-		@shape.move_left					if button_down? Gosu::Button::KbLeft
- 		@shape.move_right					if button_down? Gosu::Button::KbRight
- 		@shape.move_down					if button_down? Gosu::Button::KbDown
-		@shape.rotate(:clockwise)	if button_down? Gosu::Button::KbUp
-
-		if @cur_sec / 1000 != now / 1000
-			@shape.move_down
-			@cur_sec = now
+		# Timing for the key input
+		if @last_time % 3 == 0
+			case (@button_state)
+				when :up then @shape.rotate(:clockwise)
+				when :left then @shape.move_left
+				when :right then @shape.move_right
+				when :down then @shape.move_down
+			end
+			@button_state = nil
 		end
+
+		# Timing for moving the pieces down
+		@shape.move_down if @last_time % 60 == 0
+
+		@last_time += 1
 	end
   
   def draw
@@ -61,6 +70,10 @@ class GameWindow < Gosu::Window
   
   def button_down(id)
     close if Gosu::Button::KbEscape == id
-  end
+		@button_state = :up if Gosu::Button::KbUp == id
+		@button_state = :left if Gosu::Button::KbLeft == id
+		@button_state = :right if Gosu::Button::KbRight == id
+		@button_state = :down if Gosu::Button::KbDown == id
+	end
   
 end

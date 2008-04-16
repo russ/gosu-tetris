@@ -1,3 +1,6 @@
+require 'date'
+require 'digest/md5'
+
 class Shape
   
   attr_reader :facing, :state, :blocks
@@ -14,6 +17,9 @@ class Shape
 
 	def self.random(window, grid)
 		shapes = [ T, LLeft, LRight, Straight, Square, StepLeft, StepRight ]
+		t = Time.now.to_f / (Time.now.to_f % Time.now.to_i)
+  	random_seed = t * 1103515245 + 12345;
+  	srand((random_seed / 65536) % 32768);
 		shapes[rand(shapes.length)].new(window, grid)
 	end
 
