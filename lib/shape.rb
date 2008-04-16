@@ -46,6 +46,12 @@ class Shape
 		end
 	end
 
+	def move_to_grid
+		@blocks.each { |block| @grid.block = block }
+		@grid.blocks += @blocks
+		@blocks = nil
+	end
+
 	def rotate(direction)
 		@blocks.each { |block| block.position! }
 		if direction == :clockwise

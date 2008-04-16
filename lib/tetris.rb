@@ -31,7 +31,6 @@ class GameWindow < Gosu::Window
     super(640, 480, $options[:fullscreen])
     self.caption = 'Tetris'
 
-		@shapes = []
 		@grid = Grid.new(self)
 		@cur_sec = 0
   end
@@ -39,34 +38,29 @@ class GameWindow < Gosu::Window
   def update
 		now = Gosu::milliseconds
 
-		current_shape.move_left						if button_down? Gosu::Button::KbLeft
- 		current_shape.move_right					if button_down? Gosu::Button::KbRight
- 		current_shape.move_down						if button_down? Gosu::Button::KbDown
-		current_shape.rotate(:clockwise)	if button_down? Gosu::Button::KbUp
+		@shape.move_left					if button_down? Gosu::Button::KbLeft
+ 		@shape.move_right					if button_down? Gosu::Button::KbRight
+ 		@shape.move_down					if button_down? Gosu::Button::KbDown
+		@shape.rotate(:clockwise)	if button_down? Gosu::Button::KbUp
 
 		if @cur_sec / 1000 != now / 1000
-			current_shape.move_down
+			@shape.move_down
 			@cur_sec = now
 		end
 	end
   
   def draw
 		@grid.render
-		if current_shape.nil? || current_shape.stopped? 
+		if @shape.nil? || @shape.stopped? 
+			@shape.move_to_grid if @shape && @shape.stopped?
 			exit! if @grid.overflowed?
-			@shapes << Shape.random(self, @grid)
+			@shape = Shape.random(self, @grid)
 		end
-		@shapes.each { |s| s.render }
+		@shape.render
   end
   
   def button_down(id)
     close if Gosu::Button::KbEscape == id
   end
-
-	private
-
-	def current_shape
-		@shapes.last
-	end
   
 end
