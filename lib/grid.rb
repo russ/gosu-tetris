@@ -74,11 +74,13 @@ class Grid
 
 	def render
 		grid = empty_grid
+		# Y Blocks
 		grid.size.times do |i|
     	@block_image.draw(@x_offset, (i * block_size) + @y_offset, 0)
-    	@block_image.draw((grid[0].size * block_size + @x_offset + (block_size * 2)), (i * block_size) + @y_offset, 0)
+    	@block_image.draw((grid[0].size * block_size + @x_offset + block_size), (i * block_size) + @y_offset, 0)
 		end
-		(grid[0].size + 3).times do |i|
+		# X Blocks
+		(grid[0].size + 2).times do |i|
     	@block_image.draw((i * block_size) + @x_offset, (grid.size * block_size) + @y_offset, 0)
 		end
 		remove_filled_rows
