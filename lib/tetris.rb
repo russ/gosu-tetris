@@ -59,13 +59,13 @@ class GameWindow < Gosu::Window
 	end
   
   def draw
-		@grid.render
 		if @shape.nil? || @shape.stopped? 
 			@shape.move_to_grid if @shape && @shape.stopped?
 			exit! if @grid.overflowed?
 			@shape = Shape.random(self, @grid)
 		end
 		@shape.render
+		@grid.render
   end
   
   def button_down(id)

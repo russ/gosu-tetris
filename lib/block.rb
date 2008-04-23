@@ -30,4 +30,8 @@ class Block
 		@block_image.draw(@grid.pixel_x_at(@position.x), @grid.pixel_y_at(@position.y), 0, 1, 1, @color)
 	end
 
+	def to_s
+		"#{position}"
+	end
+
 end

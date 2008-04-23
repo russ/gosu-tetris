@@ -41,6 +41,7 @@ class Grid
 	# Unsets a block in the grid
 	def block!(block)
 		@grid[block.position.y][block.position.x] = 0
+		@blocks.delete_if { |b| block == b }
 	end
 
 	# Collision detection
@@ -62,11 +63,23 @@ class Grid
 		@grid.each_with_index do |row, y|
 			if is_filled_row(row)
 				@grid[y].each_with_index do |i,x| 
-					block!(remove_block_at(Coordinate.new(x, y)))
+					block = block_at(Coordinate.new(x, y))
+					block!(block) unless block.nil?
 				end
-				@grid[y] = Array.new(empty_grid[0].size, 0)
-				@blocks.each do |block|
-					block.position = Coordinate.new(block.position.x, block.position.y + 1)
+
+				@grid.reverse.each_with_index do |row, y|
+					row.each_with_index do |block, x|
+				 		coor = Coordinate.new(0, 1)
+						block = block_at(Coordinate.new(x, (y - (empty_grid.size - 1)).abs))
+						unless block.nil?
+							# while block.can_move_to?(coor)
+								new_coor = Coordinate.new(block.position.x, block.position.y + 1)
+				 				block.position!
+				 				block.position = new_coor
+								@blocks << block
+							# end
+						end
+					end
 				end
 			end
 		end
@@ -83,7 +96,6 @@ class Grid
 		(grid[0].size + 2).times do |i|
     	@block_image.draw((i * block_size) + @x_offset, (grid.size * block_size) + @y_offset, 0)
 		end
-		remove_filled_rows
 		@blocks.each { |block| block.render }
 	end
 
@@ -125,11 +137,11 @@ class Grid
 		return true
 	end
 
-	def remove_block_at(coor)
-		@blocks = @blocks.delete_if do |block| 
+	def block_at(coor)
+		block = @blocks.select do |block| 
 			block.position.x == coor.x && block.position.y == coor.y
-			return block
 		end
+		return block.first unless block.first.nil?
 	end
 
 end

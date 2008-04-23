@@ -16,7 +16,8 @@ class Shape
   end
 
 	def self.random(window, grid)
-		shapes = [ T, LLeft, LRight, Straight, Square, StepLeft, StepRight ]
+		# shapes = [ T, LLeft, LRight, Straight, Square, StepLeft, StepRight ]
+		shapes = [ Straight, Square ]
 		t = Time.now.to_f / (Time.now.to_f % Time.now.to_i)
   	random_seed = t * 1103515245 + 12345;
   	srand((random_seed / 65536) % 32768);
@@ -56,6 +57,7 @@ class Shape
 		@blocks.each { |block| @grid.block = block }
 		@grid.blocks += @blocks
 		@blocks = nil
+		@grid.remove_filled_rows
 	end
 
 	def rotate(direction)
